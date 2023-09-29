@@ -6,6 +6,12 @@ from UITracker import UITracker
 
 tracker = UITracker([buttonWidget])
 
+# temp function for testing
+
+
+def getWidget(name):
+    return tracker.getWidget(name)
+
 # NOTE: use class method for each widget type for menu icon
 
 

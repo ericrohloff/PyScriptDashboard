@@ -60,6 +60,7 @@ class UIElement:
 
     def _deleteElem(s, evt):
         # TODO: once UI class is implemented, have this must also remove the elem from the dict
+        #       maybe even move to UITracker class
         if js.window.confirm("Are you sure you want to remove the widget?"):
             s.element.parentNode.removeChild(s.element)
 
