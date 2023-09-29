@@ -196,6 +196,7 @@ body {
     }
 }
 
+// temp
 .generator-button {
     position:absolute;
     padding:10px;
@@ -208,5 +209,58 @@ body {
     }
     &:active {
         background-color: rgb(96, 96, 96);
+    }
+}
+
+.widget-adder {
+    position:absolute;
+    top:0;
+    right:0;
+    
+
+    &__button {
+        position:relative;
+        padding:10px;
+        display: inline-block;
+        top:0;
+        right: 0;
+        background-color: rgb(159, 159, 159);
+        cursor: pointer;
+        &:hover {
+            background-color: rgb(123, 123, 123);
+        }
+        &:active {
+            background-color: rgb(96, 96, 96);
+        }   
+    }
+
+    &__menu {
+        position: absolute;
+        display: none;
+        min-width: 200px;
+        min-height: 100px;
+        background-color: rgba(234, 234, 234, 0.668);
+        top:100%;
+        right:0;
+
+        &.shown {
+            display: flex;
+        }
+
+        &__elem {
+            padding: 5px;
+            margin: 3px;
+            background-color: rgba(182, 182, 182, 0.668);
+
+            &:hover {
+                background-color: rgba(137, 137, 137, 0.668);
+                cursor: pointer;
+            }
+            &:active {
+                background-color: rgb(100, 100, 100);
+            }
+        }
+
+        
     }
 }

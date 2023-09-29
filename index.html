@@ -19,13 +19,13 @@
     <py-script src="./main.py"></py-script>
     <div class="headBar">
       <!-- changed this -->
-      <div data-page-target="front-panel" class="headBar__tab frontPanel">
+      <div
+        data-page-target="front-panel"
+        class="headBar__tab frontPanel selected"
+      >
         Front Panel
       </div>
-      <div
-        data-page-target="code-panel"
-        class="headBar__tab codePanel selected"
-      >
+      <div data-page-target="code-panel" class="headBar__tab codePanel">
         Code Panel
       </div>
       <div data-page-target="serial-panel" class="headBar__tab serialPanel">
@@ -33,11 +33,14 @@
       </div>
     </div>
     <div id="pageContent">
-      <div data-page="code-panel" class="pageContent__content shown">
+      <div data-page="code-panel" class="pageContent__content">
         <py-repl output="replOutput"></py-repl>
       </div>
-      <div data-page="front-panel" class="pageContent__content">
-        <div class="generator-button">generate button</div>
+      <div data-page="front-panel" class="pageContent__content shown">
+        <div class="widget-adder">
+          <div class="widget-adder__button">+ Add Widget</div>
+          <div class="widget-adder__menu"></div>
+        </div>
         <div class="UIElement">
           <input
             class="UIElement__name"

@@ -18,7 +18,6 @@ class UIElement:
         s.element.style.transform = "translate(-50%, -50%)"
 
         s.element.innerHTML = s.elemHtml
-
         # save drag callback proxies so they can be added and removed
         s._dragElemProxy = create_proxy(s._dragElem)
 
@@ -77,6 +76,30 @@ class UIElement:
               </div>
               <div class="UIElement__menu__elem">Properties</div>
             </div></i
-          >
+          >'''
 
-          <div class="UIbutton"></div>'''
+
+class buttonWidget(UIElement):
+    def __init__(s, initX, initY):
+        super().__init__(initX, initY)
+        s.button = js.document.createElement("div")
+        s.button.classList.add("UIbutton")
+        s.element.appendChild(s.button)
+
+    def handleClick(s, func):
+        # event listeners require an event argument, this adds the
+        # arg so the user doesn't have to include it.
+        # If I want the user to be able to access the event object
+        # I will need to change it
+        def newFunc(evt): return func()
+        s.button.addEventListener("click", create_proxy(newFunc))
+
+    @classmethod
+    def _genMenuElem(cls):
+        # could make this method in parent class and use super
+        menuElem = js.document.createElement("div")
+        menuElem.innerText = "Button"
+        menuElem.classList.add("widget-adder__menu__elem")
+        # TODO: add event listener for menu elem click (probably class method)
+        # menuElem.addEventListener("click", create_proxy(cls._menuElemEvent))
+        return menuElem

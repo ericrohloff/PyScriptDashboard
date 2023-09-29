@@ -1,22 +1,18 @@
 import js
 from pyodide.ffi import create_proxy
 from pyscript import when
-from widgets import UIElement
+from widgets import *
+from UITracker import UITracker
 
-# temp
-buttons = []
+tracker = UITracker([buttonWidget])
 
-# temp
-@when("click", selector=".generator-button")
-def generateButton(evt):
-    # calculate mouse position in the front panel
-    fpBounds = js.document.querySelector('[data-page="front-panel"]').getBoundingClientRect()
+# NOTE: use class method for each widget type for menu icon
 
-    initX = evt.clientX-fpBounds.left
-    initY = evt.clientY-fpBounds.top 
 
-    newElem = UIElement(initX, initY)
-    buttons.append(newElem)
+@when("click", selector=".widget-adder__button")
+def toggleButtonAdderMenu(evt):
+    evt.currentTarget.parentElement.querySelector(
+        ".widget-adder__menu").classList.toggle("shown")
 
 
 @when("click", selector=".headBar__tab")

@@ -189,4 +189,49 @@ body {
 }
 .generator-button:active {
   background-color: rgb(96, 96, 96);
+}
+
+.widget-adder {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.widget-adder__button {
+  position: relative;
+  padding: 10px;
+  display: inline-block;
+  top: 0;
+  right: 0;
+  background-color: rgb(159, 159, 159);
+  cursor: pointer;
+}
+.widget-adder__button:hover {
+  background-color: rgb(123, 123, 123);
+}
+.widget-adder__button:active {
+  background-color: rgb(96, 96, 96);
+}
+.widget-adder__menu {
+  position: absolute;
+  display: none;
+  min-width: 200px;
+  min-height: 100px;
+  background-color: rgba(234, 234, 234, 0.668);
+  top: 100%;
+  right: 0;
+}
+.widget-adder__menu.shown {
+  display: flex;
+}
+.widget-adder__menu__elem {
+  padding: 5px;
+  margin: 3px;
+  background-color: rgba(182, 182, 182, 0.668);
+}
+.widget-adder__menu__elem:hover {
+  background-color: rgba(137, 137, 137, 0.668);
+  cursor: pointer;
+}
+.widget-adder__menu__elem:active {
+  background-color: rgb(100, 100, 100);
 }/*# sourceMappingURL=styles.css.map */
