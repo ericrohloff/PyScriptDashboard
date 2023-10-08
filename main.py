@@ -4,15 +4,17 @@ from pyscript import when
 from widgets import *
 from UITracker import UITracker
 
-tracker = UITracker([buttonWidget])
+tracker = UITracker([buttonWidget, LEDWidget])
 
 # temp function for testing
 
 
-def getWidget(name):
-    return tracker.getWidget(name)
+def getButton(idx):
+    return tracker.getWidget(buttonWidget, idx)
 
-# NOTE: use class method for each widget type for menu icon
+
+def getLed(idx):
+    return tracker.getWidget(LEDWidget, idx)
 
 
 @when("click", selector=".widget-adder__button")

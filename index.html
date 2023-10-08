@@ -18,7 +18,6 @@
     <py-config src="./pyscript.toml"></py-config>
     <py-script src="./main.py"></py-script>
     <div class="headBar">
-      <!-- changed this -->
       <div
         data-page-target="front-panel"
         class="headBar__tab frontPanel selected"
@@ -34,19 +33,14 @@
     </div>
     <div id="pageContent">
       <div data-page="code-panel" class="pageContent__content">
-        <py-repl output="replOutput"></py-repl>
+        <py-repl></py-repl>
       </div>
       <div data-page="front-panel" class="pageContent__content shown">
         <div class="widget-adder">
           <div class="widget-adder__button">+ Add Widget</div>
           <div class="widget-adder__menu"></div>
         </div>
-        <div class="UIElement">
-          <input
-            class="UIElement__name"
-            type="text"
-            placeholder="Enter element name"
-          />
+        <!-- <div class="UIElement">
           <i class="UIElement__caret"
             ><div class="UIElement__menu">
               <div class="UIElement__menu__elem" data-function="delete">
@@ -55,12 +49,24 @@
               <div class="UIElement__menu__elem">Properties</div>
             </div></i
           >
-
           <div class="UIbutton"></div>
+          <div class="UIElement__id">Button 00</div>
+        </div> -->
+        <div class="UIElement">
+          <i class="UIElement__caret"
+            ><div class="UIElement__menu">
+              <div class="UIElement__menu__elem" data-function="delete">
+                Delete Widget
+              </div>
+              <div class="UIElement__menu__elem">Properties</div>
+            </div></i
+          >
+          <div class="UIled"></div>
+          <div class="UIElement__id">LED 00</div>
         </div>
       </div>
       <div data-page="serial-panel" class="pageContent__content">
-        <py-repl output="replOutput">import serial</py-repl>
+        <py-repl>import serial</py-repl>
       </div>
     </div>
   </body>

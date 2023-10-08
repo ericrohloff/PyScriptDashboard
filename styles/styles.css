@@ -103,12 +103,25 @@ body {
   height: 40px;
   border-radius: 50%;
   border: solid 1px black;
+  margin: 5px 10px 0px 10px;
 }
 .UIbutton:hover {
   background-color: rgb(155, 52, 52);
 }
 .UIbutton:active {
   background-color: rgb(118, 31, 31);
+}
+
+.UIled {
+  background-color: rgba(255, 255, 255, 0);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: solid 1px black;
+  margin: 5px 10px 0px 10px;
+}
+.UIled.on {
+  background-color: rgb(57, 215, 52);
 }
 
 .UIElement {
@@ -139,12 +152,18 @@ body {
   height: 20px;
   margin: 3px;
 }
+.UIElement__id {
+  font-size: 1em;
+  margin: 5px;
+  background-color: rgba(0, 0, 0, 0);
+  text-align: center;
+}
 .UIElement__caret {
   position: absolute;
   width: 0;
   height: 0;
-  top: 10px;
-  right: 10px;
+  top: 6px;
+  right: 6px;
   border-top: 4px solid;
   border-right: 4px solid transparent;
   border-left: 4px solid transparent;
