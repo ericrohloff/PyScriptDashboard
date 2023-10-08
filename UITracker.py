@@ -6,6 +6,8 @@ from widgets import *
 class UITracker:
     def __init__(s, widgetList):
 
+        s.widgetList = widgetList
+
         widgetMenu = js.document.querySelector(".widget-adder__menu")
 
         # Iterate through widget list and add their menu elements to menu
@@ -16,5 +18,10 @@ class UITracker:
     def getWidget(s, className, index):
         return className.widgets[index]
 
+    def enableRunMode(s):
+        for widgetClass in s.widgetList:
+            widgetClass.enableRunMode()
 
-# TODO: make a way to reference widgets
+    def enableEditMode(s):
+        for widgetClass in s.widgetList:
+            widgetClass.enableEditMode()

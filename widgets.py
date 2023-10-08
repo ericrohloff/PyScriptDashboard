@@ -11,12 +11,15 @@ class UIElement(ABC):
     availableIndexes = []  # abstract
     numWidgets = 0  # abstract
 
+    editable = True
+
     def __init__(s, initX, initY):
         s.element = js.document.createElement("div")
 
         s.frontPanel = js.document.querySelector("[data-page='front-panel']")
         s.frontPanel.appendChild(s.element)
         s.element.classList.add("UIElement")
+        s.element.classList.add("editable")
 
         # position element under mouse
         s.element.style.left = f"{initX}px"
@@ -24,8 +27,12 @@ class UIElement(ABC):
         s.element.style.transform = "translate(-50%, -50%)"
 
         s.element.innerHTML = s.elemHtml
+
         # save drag callback proxies so they can be added and removed
         s._dragElemProxy = create_proxy(s._dragElem)
+
+        # makes it so you can drag element out of button
+        js.document.addEventListener("mousemove", s._dragElemProxy)
 
         # add drag event listeners
         s.element.addEventListener("mousedown", create_proxy(s._startDrag))
@@ -81,7 +88,8 @@ class UIElement(ABC):
         s.element.style.top = f"{evt.movementY + topStart}px"
 
     def _startDrag(s, evt):
-        js.document.addEventListener("mousemove", s._dragElemProxy)
+        if s.__class__.editable:
+            js.document.addEventListener("mousemove", s._dragElemProxy)
 
     def _stopDrag(s, evt):
         js.document.removeEventListener("mousemove", s._dragElemProxy)
@@ -116,6 +124,20 @@ class UIElement(ABC):
         initY = evt.clientY-fpBounds.top
 
         cls(initX, initY)
+
+    @classmethod
+    def enableRunMode(cls):
+        cls.editable = False
+        for widget in cls.widgets:
+            if widget:
+                widget.element.classList.remove("editable")
+
+    @classmethod
+    def enableEditMode(cls):
+        cls.editable = True
+        for widget in cls.widgets:
+            if widget:
+                widget.element.classList.add("editable")
 
     @classmethod
     @abstractmethod
@@ -194,7 +216,7 @@ class buttonWidget(UIElement):
         menuElem = js.document.createElement("div")
         menuElem.innerText = "Button"
         menuElem.classList.add("widget-adder__menu__elem")
-        menuElem.addEventListener("click", create_proxy(cls._genWidget))
+        menuElem.addEventListener("mousedown", create_proxy(cls._genWidget))
         return menuElem
 
 
@@ -242,11 +264,9 @@ class LEDWidget(UIElement):
         menuElem = js.document.createElement("div")
         menuElem.innerText = "LED"
         menuElem.classList.add("widget-adder__menu__elem")
-        menuElem.addEventListener("click", create_proxy(cls._genWidget))
+        menuElem.addEventListener("mousedown", create_proxy(cls._genWidget))
         return menuElem
 
 
 # TODO:
-# make it so that when a new event listener is assigned, the old one is removed
 # make text widget
-# make LED widget

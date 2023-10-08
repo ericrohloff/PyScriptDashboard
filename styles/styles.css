@@ -9,77 +9,94 @@ body {
   width: 100%;
   height: 40px;
   display: flex;
+  justify-content: space-between;
 }
-.headBar__tab {
+.headBar__tabs {
+  height: 100%;
+  width: 35%;
+  display: flex;
+}
+.headBar__tabs__tab {
   display: inline-flex;
-  width: 10%;
   padding: 4px 8px 4px 8px;
   box-sizing: border-box;
-  height: 100%;
+  flex: 1;
   align-items: center;
   justify-content: center;
 }
-.headBar__tab.frontPanel {
+.headBar__tabs__tab.frontPanel {
   background-color: rgb(91, 191, 82);
 }
-.headBar__tab.frontPanel:hover {
+.headBar__tabs__tab.frontPanel:hover {
   background-color: rgb(63, 154, 55);
   cursor: pointer;
 }
-.headBar__tab.frontPanel:active {
+.headBar__tabs__tab.frontPanel:active {
   background-color: rgb(39, 121, 32);
 }
-.headBar__tab.codePanel {
+.headBar__tabs__tab.codePanel {
   background-color: rgb(191, 82, 82);
 }
-.headBar__tab.codePanel:hover {
+.headBar__tabs__tab.codePanel:hover {
   background-color: rgb(168, 58, 58);
   cursor: pointer;
 }
-.headBar__tab.codePanel:active {
+.headBar__tabs__tab.codePanel:active {
   background-color: rgb(119, 30, 30);
 }
-.headBar__tab.serialPanel {
+.headBar__tabs__tab.serialPanel {
   background-color: rgb(82, 89, 191);
 }
-.headBar__tab.serialPanel:hover {
+.headBar__tabs__tab.serialPanel:hover {
   background-color: rgb(58, 72, 159);
   cursor: pointer;
 }
-.headBar__tab.serialPanel:active {
+.headBar__tabs__tab.serialPanel:active {
   background-color: rgb(49, 43, 136);
 }
-.headBar__tab.selected {
+.headBar__tabs__tab.selected {
   border: 1px solid black;
 }
-.headBar__panelToggle {
-  display: inline-flex;
-  padding: 4px 8px 4px 8px;
-  box-sizing: border-box;
+.headBar__buttons {
+  display: flex;
   height: 100%;
-  width: 10%;
-  align-items: center;
+  width: 20%;
+}
+.headBar__buttons__button {
+  flex: 1;
+  display: flex;
   justify-content: center;
-}
-.headBar__panelToggle.front {
-  background-color: rgb(91, 191, 82);
-}
-.headBar__panelToggle.front:hover {
-  background-color: rgb(63, 154, 55);
+  align-items: center;
+  height: 100%;
   cursor: pointer;
 }
-.headBar__panelToggle.front:active {
-  background-color: rgb(39, 121, 32);
+.headBar__buttons__button.run {
+  background-color: rgb(57, 200, 50);
 }
-.headBar__panelToggle.back {
-  background-color: rgb(191, 82, 82);
+.headBar__buttons__button.run.disabled {
+  background-color: rgb(126, 126, 126);
+  cursor: not-allowed;
+  pointer-events: none;
 }
-.headBar__panelToggle.back:hover {
-  background-color: rgb(168, 58, 58);
-  cursor: pointer;
+.headBar__buttons__button.run:hover {
+  background-color: rgb(55, 179, 48);
 }
-.headBar__panelToggle.back:active {
-  background-color: rgb(119, 30, 30);
+.headBar__buttons__button.run:active {
+  background-color: rgb(53, 145, 48);
+}
+.headBar__buttons__button.stop {
+  background-color: rgb(224, 67, 67);
+}
+.headBar__buttons__button.stop.disabled {
+  background-color: rgb(126, 126, 126);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.headBar__buttons__button.stop:hover {
+  background-color: rgb(184, 58, 58);
+}
+.headBar__buttons__button.stop:active {
+  background-color: rgb(144, 54, 54);
 }
 
 .pageContent {
@@ -138,19 +155,12 @@ body {
   min-height: 40px;
   padding: 5px;
 }
-.UIElement:hover {
+.UIElement.editable:hover {
   outline: 1px solid rgba(0, 0, 0, 0.428);
 }
-.UIElement:hover .UIElement__caret {
+.UIElement.editable:hover .UIElement__caret {
   visibility: visible;
   cursor: pointer;
-}
-.UIElement__name {
-  border: none;
-  background-color: rgba(0, 0, 0, 0);
-  font-size: 1em;
-  height: 20px;
-  margin: 3px;
 }
 .UIElement__id {
   font-size: 1em;

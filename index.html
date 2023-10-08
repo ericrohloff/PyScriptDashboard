@@ -18,17 +18,32 @@
     <py-config src="./pyscript.toml"></py-config>
     <py-script src="./main.py"></py-script>
     <div class="headBar">
-      <div
-        data-page-target="front-panel"
-        class="headBar__tab frontPanel selected"
-      >
-        Front Panel
+      <div class="headBar__tabs">
+        <div
+          data-page-target="front-panel"
+          class="headBar__tabs__tab frontPanel selected"
+        >
+          Front Panel
+        </div>
+        <div data-page-target="code-panel" class="headBar__tabs__tab codePanel">
+          Code Panel
+        </div>
+        <div
+          data-page-target="serial-panel"
+          class="headBar__tabs__tab serialPanel"
+        >
+          Serial Panel
+        </div>
       </div>
-      <div data-page-target="code-panel" class="headBar__tab codePanel">
-        Code Panel
-      </div>
-      <div data-page-target="serial-panel" class="headBar__tab serialPanel">
-        Serial Panel
+      <div class="headBar__buttons">
+        <div class="headBar__buttons__button run" data-button="run">Run</div>
+        <div
+          class="headBar__buttons__button stop disabled"
+          data-button="stop"
+          disabled
+        >
+          Stop
+        </div>
       </div>
     </div>
     <div id="pageContent">

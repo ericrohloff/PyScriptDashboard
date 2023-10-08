@@ -9,84 +9,97 @@ body {
     width: 100%;
     height: 40px;
     display: flex;
+    justify-content: space-between;
 
-    //definitely change this
-    &__tab {
-        display: inline-flex;
-        width: 10%;
-        padding: 4px 8px 4px 8px;
-        box-sizing: border-box;
+    &__tabs {
         height: 100%;
-        align-items: center;
-        justify-content: center;
-
-        &.frontPanel {
-            background-color: rgb(91, 191, 82);
-                &:hover {
-                    background-color: rgb(63, 154, 55);
-                    cursor: pointer;
-                }
-                &:active {
-                    background-color: rgb(39, 121, 32);
-                }
-        }
+        width: 35%;
+        display: flex;
+        &__tab {
+            display: inline-flex;
+            padding: 4px 8px 4px 8px;
+            box-sizing: border-box;
+            flex:1;
+            align-items: center;
+            justify-content: center;
     
-        &.codePanel {
-            background-color: rgb(191, 82, 82);
-                &:hover {
-                    background-color: rgb(168, 58, 58);
-                    cursor: pointer;
-                }
-                &:active {
-                    background-color: rgb(119, 30, 30);
-                }
-        }
+            &.frontPanel {
+                background-color: rgb(91, 191, 82);
+                    &:hover {
+                        background-color: rgb(63, 154, 55);
+                        cursor: pointer;
+                    }
+                    &:active {
+                        background-color: rgb(39, 121, 32);
+                    }
+            }
+        
+            &.codePanel {
+                background-color: rgb(191, 82, 82);
+                    &:hover {
+                        background-color: rgb(168, 58, 58);
+                        cursor: pointer;
+                    }
+                    &:active {
+                        background-color: rgb(119, 30, 30);
+                    }
+            }
+        
+            &.serialPanel {
+                background-color: rgb(82, 89, 191);
+                    &:hover {
+                        background-color: rgb(58, 72, 159);
+                        cursor: pointer;
+                    }
+                    &:active {
+                        background-color: rgb(49, 43, 136);
+                    }
+            }
     
-        &.serialPanel {
-            background-color: rgb(82, 89, 191);
-                &:hover {
-                    background-color: rgb(58, 72, 159);
-                    cursor: pointer;
-                }
-                &:active {
-                    background-color: rgb(49, 43, 136);
-                }
-        }
-
-        &.selected {
-            border: 1px solid black;
+            &.selected {
+                border: 1px solid black;
+            }
         }
     }
 
-    
-
-    &__panelToggle {
-        display: inline-flex;
-        padding: 4px 8px 4px 8px;
-        box-sizing: border-box;
+    &__buttons {
+        display: flex;
         height: 100%;
-        width: 10%;
-        align-items: center;
-        justify-content: center;
-        
-        &.front {
-            background-color: rgb(91, 191, 82);
-            &:hover {
-                background-color: rgb(63, 154, 55);
-                cursor: pointer;
+        width: 20%;
+        &__button {
+            flex:1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            cursor: pointer;
+            &.run {
+                &.disabled {
+                    background-color: rgb(126, 126, 126);
+                    cursor:not-allowed;
+                    pointer-events: none;
+                }
+                background-color: rgb(57, 200, 50);
+                &:hover {
+                    background-color: rgb(55, 179, 48);
+                }
+                &:active {
+                    background-color: rgb(53, 145, 48);
+                }
             }
-            &:active {
-                background-color: rgb(39, 121, 32);
-            }
-        }
-        &.back {
-            background-color: rgb(191, 82, 82);
-            &:hover {
-                background-color: rgb(168, 58, 58);
-                cursor: pointer;
-            }
-            &:active {
-                background-color: rgb(119, 30, 30);
+            &.stop {
+                &.disabled {
+                    background-color: rgb(126, 126, 126);
+                    cursor:not-allowed;
+                    pointer-events: none;
+                }
+                background-color: rgb(224, 67, 67);
+                &:hover {
+                    background-color: rgb(184, 58, 58);
+                }
+                &:active {
+                    background-color: rgb(144, 54, 54);
+                }
             }
         }
     }
@@ -118,7 +131,7 @@ body {
     border: solid 1px black;
 
     margin: 5px 10px 0px 10px;
-    
+
     &:hover {
         background-color: rgb(155, 52, 52);
     }
@@ -154,22 +167,17 @@ body {
     min-width: 40px;
     min-height: 40px;
     padding: 5px;
-    &:hover {
-        outline: 1px solid rgba(0, 0, 0, 0.428);
-
-        .UIElement__caret {
-            visibility: visible;
-            cursor: pointer;
+    &.editable{
+        &:hover {
+            outline: 1px solid rgba(0, 0, 0, 0.428);
+    
+            .UIElement__caret {
+                visibility: visible;
+                cursor: pointer;
+            }
         }
     }
-
-    &__name {
-        border: none;
-        background-color: rgba(0, 0, 0, 0);
-        font-size: 1em;
-        height: 20px;
-        margin: 3px;
-    }
+    
 
     &__id {
         font-size: 1em;
