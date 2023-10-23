@@ -228,6 +228,7 @@ class LEDWidget(UIElement):
     def __init__(s, initX, initY):
         s.index = None
         s.element = None
+        s.isOn = False
         super().__init__(initX, initY)
 
         # make led
@@ -243,18 +244,24 @@ class LEDWidget(UIElement):
 
     def turnOn(s):
         s.led.classList.add("on")
+        s.isOn = True
 
     def turnOff(s):
         s.led.classList.remove("on")
+        s.isOn = False
 
     def toggle(s):
         s.led.classList.toggle("on")
+        s.isOn = not s.isOn
 
     def setState(s, state):
         if state == 0:
-            s.led.classList.remove("on")
+            s.turnOff()
         if state > 0:
-            s.led.classList.add("on")
+            s.turnOn()
+
+    def isOn(s):
+        return s.isOn
 
     @classmethod
     def _genMenuElem(cls):
