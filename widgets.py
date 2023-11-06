@@ -3,6 +3,7 @@ from pyodide.ffi import create_proxy
 from pyscript import when
 import heapq
 from abc import ABC, abstractmethod
+import asyncio
 
 
 class UIElement(ABC):
@@ -65,27 +66,74 @@ class UIElement(ABC):
         if not js.window.confirm("Are you sure you want to remove the widget?"):
             return
 
+        # function class can override to add additional destructor steps if necessary
+        s._destruct()
+
         s.element.parentNode.removeChild(s.element)
         s.__class__.numWidgets -= 1
         heapq.heappush(s.__class__.availableIndexes, s.index)
         s.__class__.widgets[s.index] = None
 
     def _dragElem(s, evt):
+        # TODO: rework so drag repositioning is based on mouse position instead of movementX/Y for clearner movement
+
         # event listener for mouse movement to move widget
 
-        evt.movementX
+        dx = evt.movementX
+        dy = evt.movementY
+
+        # if transformation would cause element bounding rect to exit front panel, don't allow move.
+        # TODO: movement with this is buggy/slow
+        dx, dy = s._returnLegalMovement(dx, dy)
+
+        # return if neither direction was legal to avoid unnecessary work
+        if not dx and dy:
+            return
+
         elemStyles = js.window.getComputedStyle(s.element)
-
-        # temp
-        if not "px" in elemStyles.left:
-            print("_dragElem: no px in left style")
-
         # may need to change to regex if more robust parsing needed
-        leftStart = int(elemStyles.left.rstrip("px"))
-        topStart = int(elemStyles.top.rstrip("px"))
+        leftStart = (elemStyles.left.rstrip("px"))
+        topStart = (elemStyles.top.rstrip("px"))
+        topStart = int(float(topStart))
+        leftStart = int(float(leftStart))
 
-        s.element.style.left = f"{evt.movementX + leftStart}px"
-        s.element.style.top = f"{evt.movementY + topStart}px"
+        s.element.style.left = f"{dx + leftStart}px"
+        s.element.style.top = f"{dy + topStart}px"
+
+    def _returnLegalMovement(s, dx, dy):
+        # checks if given movement to this element is legal
+        dy2 = dy
+        dx2 = dx
+
+        elemBounds = s.element.getBoundingClientRect()
+        fpBounds = js.document.querySelector(
+            '[data-page="front-panel"]').getBoundingClientRect()
+
+        # check y movement
+        if elemBounds.top + dy < fpBounds.top and dy < 0:
+            if elemBounds.top > fpBounds.top:
+                dy2 = fpBounds.top - elemBounds.top
+            else:
+                dy2 = 0
+
+        # allowing movement past bottom for now
+        # elif elemBounds.bottom + dy > fpBounds.bottom and dy > 0:
+        #     dy2 = 0
+
+        # check x movement
+        if elemBounds.left + dx < fpBounds.left and dx < 0:
+            if elemBounds.left > fpBounds.left:
+                dx2 = fpBounds.left - elemBounds.left
+            else:
+                dx2 = 0
+
+        elif elemBounds.right + dx > fpBounds.right and dx > 0:
+            if elemBounds.right < fpBounds.right:
+                dx2 = fpBounds.right - elemBounds.right
+            else:
+                dx2 = 0
+
+        return dx2, dy2
 
     def _startDrag(s, evt):
         if s.__class__.editable:
@@ -142,6 +190,10 @@ class UIElement(ABC):
     @classmethod
     @abstractmethod
     def _genMenuElem(cls):
+        pass
+
+    # function subclass can override to implement proper destruction
+    def _destruct(s):
         pass
 
 
@@ -270,6 +322,133 @@ class LEDWidget(UIElement):
 
         menuElem = js.document.createElement("div")
         menuElem.innerText = "LED"
+        menuElem.classList.add("widget-adder__menu__elem")
+        menuElem.addEventListener("mousedown", create_proxy(cls._genWidget))
+        return menuElem
+
+
+class cameraWidget(UIElement):
+    widgets = []
+    availableIndexes = []
+    numWidgets = 0
+
+    def __init__(s, initX, initY):
+        s.index = None
+        s.element = None
+        s.stream = None
+        s.lastSnap = None
+
+        super().__init__(initX, initY)
+
+        # make start camera button
+        s.startButton = js.document.createElement("button")
+        s.startButton.classList.add("UIcamera__startbutton")
+        s.startButton.innerText = "Start Camera"
+        s.element.appendChild(s.startButton)
+
+        # make snap button
+        s.snapButton = js.document.createElement("button")
+        s.snapButton.classList.add("UIcamera__startbutton")
+        s.snapButton.innerText = "Snap"
+        s.element.appendChild(s.snapButton)
+
+        # make camera
+        s.camera = js.document.createElement("video")
+        s.camera.classList.add("UIcamera")
+        s.camera.autoplay = True
+        s.element.appendChild(s.camera)
+
+        # tie start callback
+        s.startButton.addEventListener("click", create_proxy(s._cameraStart))
+        s.snapButton.addEventListener("click", create_proxy(s.snap))
+
+        # show widget number
+        idTag = js.document.createElement("div")
+        idTag.classList.add("UIElement__id")
+        idTag.innerText = f"Camera {s.index}"
+        s.element.appendChild(idTag)
+
+        # create hidden canvas, this will be used to store the full resolution image
+        # TODO: figure out a better way to do this
+        s.canvas = js.document.createElement("canvas")
+        s.element.appendChild(s.canvas)
+        s.ctx = s.canvas.getContext("2d")
+        s.canvas.style.width = "267px"
+        s.canvas.style.height = "200px"
+
+    def snap(s):
+        s.ctx.drawImage(s.camera, 0, 0, s.camera.videoWidth,
+                        s.camera.videoHeight)
+
+    async def _cameraStart(s, evt):
+        media = js.Object.new()
+        media.audio = False
+        media.video = True
+        s.stream = await js.navigator.mediaDevices.getUserMedia(media)
+        s.camera.srcObject = s.stream
+
+        while s.camera.videoWidth == 0:
+            await asyncio.sleep(0.1)
+
+        s.canvas.width = s.camera.videoWidth
+        s.canvas.height = s.camera.videoHeight
+
+    def _destruct(s):
+        if s.stream:
+            s.stream.getTracks()[0].stop()
+
+    @classmethod
+    def _genMenuElem(cls):
+        # generates DOM element that will create an instance of the class
+        # when clicked (for add widget menu)
+
+        menuElem = js.document.createElement("div")
+        menuElem.innerText = "Camera"
+        menuElem.classList.add("widget-adder__menu__elem")
+        menuElem.addEventListener("mousedown", create_proxy(cls._genWidget))
+        return menuElem
+
+
+class canvasWidget(UIElement):
+    widgets = []
+    availableIndexes = []
+    numWidgets = 0
+
+    def __init__(s, initX, initY):
+        s.index = None
+        s.element = None
+
+        super().__init__(initX, initY)
+
+        # make canvas
+        s.canvas = js.document.createElement("canvas")
+        s.canvas.classList.add("UIcanvas")
+        s.element.appendChild(s.canvas)
+
+        s.ctx = s.canvas.getContext("2d")
+        s._scaleContext()
+
+        # show widget number
+        idTag = js.document.createElement("div")
+        idTag.classList.add("UIElement__id")
+        idTag.innerText = f"Canvas {s.index}"
+        s.element.appendChild(idTag)
+
+    def renderImage(s):
+        pass
+
+    def _scaleContext(s):
+        # needed if canvas is resized to make x and y axis equivalently scaled
+        s.ctx.scale(s.canvas.width/s.canvas.offsetWidth,
+                    s.canvas.height/s.canvas.offsetHeight)
+
+    @classmethod
+    def _genMenuElem(cls):
+        # generates DOM element that will create an instance of the class
+        # when clicked (for add widget menu)
+
+        menuElem = js.document.createElement("div")
+        menuElem.innerText = "Canvas"
         menuElem.classList.add("widget-adder__menu__elem")
         menuElem.addEventListener("mousedown", create_proxy(cls._genWidget))
         return menuElem

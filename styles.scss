@@ -154,6 +154,27 @@ body {
     }
 }
 
+.UIcamera {
+    background-color: rgb(0, 0, 0);
+    height: 200px;
+    aspect-ratio: 4/3;
+
+    &__startbutton {
+        border: 0;
+        background-color: rgb(158, 158, 158);
+        cursor: pointer;
+        &:active {
+            background-color: rgb(122, 122, 122);
+        }
+    }
+}
+
+.UIcanvas {
+    background-color: rgb(233, 233, 233);
+    height: 200px;
+    aspect-ratio: 4/3;
+}
+
 .UIElement {
     position: absolute;
     box-sizing: border-box;

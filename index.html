@@ -67,7 +67,7 @@
           <div class="UIbutton"></div>
           <div class="UIElement__id">Button 00</div>
         </div> -->
-        <div class="UIElement">
+        <div class="UIElement editable">
           <i class="UIElement__caret"
             ><div class="UIElement__menu">
               <div class="UIElement__menu__elem" data-function="delete">
@@ -76,9 +76,29 @@
               <div class="UIElement__menu__elem">Properties</div>
             </div></i
           >
-          <div class="UIled"></div>
-          <div class="UIElement__id">LED 00</div>
+          <button class="UIcamera__startbutton" id="start-camera">
+            start camera
+          </button>
+          <button class="UIcamera__startbutton" id="stop-camera">
+            stop camera
+          </button>
+          <video class="UIcamera" autoplay></video>
+          <div class="UIElement__id">Camera</div>
         </div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <button id="snap">snap</button>
+        <canvas class="UIcanvas" id="canvas"></canvas>
       </div>
       <div data-page="serial-panel" class="pageContent__content">
         <py-repl>import serial</py-repl>

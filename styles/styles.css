@@ -141,6 +141,26 @@ body {
   background-color: rgb(57, 215, 52);
 }
 
+.UIcamera {
+  background-color: rgb(0, 0, 0);
+  height: 200px;
+  aspect-ratio: 4/3;
+}
+.UIcamera__startbutton {
+  border: 0;
+  background-color: rgb(158, 158, 158);
+  cursor: pointer;
+}
+.UIcamera__startbutton:active {
+  background-color: rgb(122, 122, 122);
+}
+
+.UIcanvas {
+  background-color: rgb(233, 233, 233);
+  height: 200px;
+  aspect-ratio: 4/3;
+}
+
 .UIElement {
   position: absolute;
   box-sizing: border-box;

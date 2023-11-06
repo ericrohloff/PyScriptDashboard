@@ -4,9 +4,80 @@ from pyscript import when
 from widgets import *
 from UITracker import UITracker
 
-tracker = UITracker([buttonWidget, LEDWidget])
+tracker = UITracker([buttonWidget, LEDWidget, cameraWidget, canvasWidget])
 
 # temp functions for testing
+
+video = js.document.querySelector(".UIcamera")
+camera_button = js.document.querySelector("#start-camera")
+stopcam = js.document.querySelector("#stop-camera")
+stream = None
+
+
+async def camera_click(e):
+    global stream
+    media = js.Object.new()
+    media.audio = False
+    media.video = True
+    stream = await js.navigator.mediaDevices.getUserMedia(media)
+    video.srcObject = stream
+
+
+async def stopit(e):
+    stream.getTracks()[0].stop()
+
+camera_button.addEventListener('click', create_proxy(camera_click))
+
+stopcam.addEventListener('click', create_proxy(stopit))
+
+canvas = js.document.querySelector("#canvas")
+ctx = canvas.getContext("2d")
+
+
+@when("click", selector="#snap")
+def snapcam(evt):
+    print("video width")
+    print(video.videoWidth)
+    print("video height")
+    print(video.videoHeight)
+    print("video offset width")
+    print(video.offsetWidth)
+    print("video offset height")
+    print(video.offsetHeight)
+    print("width")
+    print(canvas.width)
+    print("offset width")
+    print(canvas.offsetWidth)
+    print("height")
+    print(canvas.height)
+    print("offset height")
+    print(canvas.offsetHeight)
+
+    # ctx.scale(canvas.width/canvas.offsetWidth,
+    #           canvas.height/canvas.offsetHeight)
+
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight
+
+    print("canvas width")
+    print(canvas.width)
+    print("canvas height")
+    print(canvas.height)
+    print("canvas offset width")
+    print(canvas.offsetWidth)
+    print("canvas offset height")
+    print(canvas.offsetHeight)
+
+    print("________________")
+    ctx.moveTo(0, 0)
+    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
+    ctx.lineTo(200, 100)
+    ctx.stroke()
+    ctx.moveTo(0, 0)
+    ctx.lineTo(100, 100)
+    ctx.stroke()
+
+######
 
 
 def getButton(idx):
