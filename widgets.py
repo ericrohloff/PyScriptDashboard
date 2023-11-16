@@ -4,6 +4,11 @@ from pyscript import when
 import heapq
 from abc import ABC, abstractmethod
 import asyncio
+import cv2
+import base64
+import numpy as np
+from PIL import Image
+import io
 
 
 class UIElement(ABC):
@@ -14,7 +19,11 @@ class UIElement(ABC):
 
     editable = True
 
-    def __init__(s, initX, initY):
+    def __init__(s, initX, initY, genFromClick=True, forcedIdx=None):
+        s.xPos = initX
+        s.yPos = initY
+        s.index = forcedIdx
+
         s.element = js.document.createElement("div")
 
         s.frontPanel = js.document.querySelector("[data-page='front-panel']")
@@ -33,7 +42,8 @@ class UIElement(ABC):
         s._dragElemProxy = create_proxy(s._dragElem)
 
         # makes it so you can drag element out of button
-        js.document.addEventListener("mousemove", s._dragElemProxy)
+        if genFromClick:
+            js.document.addEventListener("mousemove", s._dragElemProxy)
 
         # add drag event listeners
         s.element.addEventListener("mousedown", create_proxy(s._startDrag))
@@ -48,12 +58,14 @@ class UIElement(ABC):
             "[data-function='delete']").addEventListener("click", create_proxy(s._deleteWidget))
 
         # track widget in class attributes
-        s._trackNewWidget()
+        s._trackNewWidget(forcedIdx)
 
-    def _trackNewWidget(s):
+    def _trackNewWidget(s, forcedIdx):
         # should be called after new widget is created in subclass to properly give
         # the element an ID.
-        if not s.__class__.availableIndexes:
+        if forcedIdx:  # TODO: fix forcedIdx stuff
+            s.index = forcedIdx
+        elif not s.__class__.availableIndexes:
             s.index = s.__class__.numWidgets
         else:
             s.index = heapq.heappop(s.__class__.availableIndexes)
@@ -61,9 +73,9 @@ class UIElement(ABC):
         s.__class__.numWidgets += 1
         s.__class__.widgets.insert(s.index, s)
 
-    def _deleteWidget(s, evt):
+    def _deleteWidget(s, evt=None, forced=False):
         # event listener for delete button in dropdown menu
-        if not js.window.confirm("Are you sure you want to remove the widget?"):
+        if not js.window.confirm("Are you sure you want to remove the widget?") and not forced:
             return
 
         # function class can override to add additional destructor steps if necessary
@@ -97,8 +109,11 @@ class UIElement(ABC):
         topStart = int(float(topStart))
         leftStart = int(float(leftStart))
 
-        s.element.style.left = f"{dx + leftStart}px"
-        s.element.style.top = f"{dy + topStart}px"
+        s.yPos = topStart+dy
+        s.xPos = leftStart+dx
+
+        s.element.style.left = f"{s.xPos}px"
+        s.element.style.top = f"{s.yPos}px"
 
     def _returnLegalMovement(s, dx, dy):
         # checks if given movement to this element is legal
@@ -135,8 +150,9 @@ class UIElement(ABC):
 
         return dx2, dy2
 
-    def _startDrag(s, evt):
+    def _startDrag(s, evt=None):
         if s.__class__.editable:
+            evt.preventDefault()
             js.document.addEventListener("mousemove", s._dragElemProxy)
 
     def _stopDrag(s, evt):
@@ -171,6 +187,8 @@ class UIElement(ABC):
         initX = evt.clientX-fpBounds.left
         initY = evt.clientY-fpBounds.top
 
+        evt.preventDefault()
+
         cls(initX, initY)
 
     @classmethod
@@ -188,6 +206,44 @@ class UIElement(ABC):
                 widget.element.classList.add("editable")
 
     @classmethod
+    def saveData(cls):
+        # serializes data for all widgets in class and returns dictionary
+        data = {}
+        print(1)
+        for widget in cls.widgets:
+            if widget:
+                print(2)
+                data[f"{widget.index}"] = widget.getInstanceData()
+        return data
+
+    def getInstanceData(s):
+        # serializes data for instance
+        print(3)
+        return {
+            "xPos": s.xPos,
+            "ypos": s.yPos,
+        }
+
+    @classmethod
+    def loadData(cls, data):
+        for key, value in data:
+            idx = int(key)
+            cls.widgets[idx] = cls.instantiateFromData(value, idx)
+
+    @classmethod
+    def instantiateFromData(cls, data, idx):
+        initX = data["initX"]
+        initY = data["initY"]
+        return cls(initX, initY, genFromClick=False, forcedIdx=idx)
+
+    @classmethod
+    def clearClass(cls):
+        for widget in cls.widgets:
+            widget._deleteWidget(forced=True)
+        cls.numWidgets = 0
+        cls.availableIndexes = []
+
+    @classmethod
     @abstractmethod
     def _genMenuElem(cls):
         pass
@@ -202,7 +258,7 @@ class buttonWidget(UIElement):
     availableIndexes = []
     numWidgets = 0
 
-    def __init__(s, initX, initY):
+    def __init__(s, initX, initY, genFromClick=True, forcedIdx=None):
         # will contain index of instance
         s.index = None
 
@@ -213,7 +269,7 @@ class buttonWidget(UIElement):
         s.state = False
 
         # initialize element
-        super().__init__(initX, initY)
+        super().__init__(initX, initY, genFromClick, forcedIdx)
         s.button = js.document.createElement("div")
         s.button.classList.add("UIbutton")
         s.element.appendChild(s.button)
@@ -277,11 +333,11 @@ class LEDWidget(UIElement):
     availableIndexes = []
     numWidgets = 0
 
-    def __init__(s, initX, initY):
+    def __init__(s, initX, initY, genFromClick=True, forcedIdx=None):
         s.index = None
         s.element = None
         s.isOn = False
-        super().__init__(initX, initY)
+        super().__init__(initX, initY, genFromClick, forcedIdx)
 
         # make led
         s.led = js.document.createElement("div")
@@ -332,13 +388,13 @@ class cameraWidget(UIElement):
     availableIndexes = []
     numWidgets = 0
 
-    def __init__(s, initX, initY):
+    def __init__(s, initX, initY, genFromClick=True, forcedIdx=None):
         s.index = None
         s.element = None
         s.stream = None
         s.lastSnap = None
 
-        super().__init__(initX, initY)
+        super().__init__(initX, initY, genFromClick, forcedIdx)
 
         # make start camera button
         s.startButton = js.document.createElement("button")
@@ -376,9 +432,19 @@ class cameraWidget(UIElement):
         s.canvas.style.width = "267px"
         s.canvas.style.height = "200px"
 
-    def snap(s):
-        s.ctx.drawImage(s.camera, 0, 0, s.camera.videoWidth,
-                        s.camera.videoHeight)
+    def snap(s, evt=None):
+        height = s.camera.videoHeight
+        width = s.camera.videoWidth
+        # grab current frame
+        s.ctx.drawImage(s.camera, 0, 0, width,
+                        height)
+
+        imageDataURL = s.canvas.toDataURL('image/jpeg')
+        b64String = imageDataURL.split("base64,")[1]
+        rawPIL = Image.open(io.BytesIO(base64.b64decode(b64String)))
+        s.lastSnap = rawPIL
+
+        return s.lastSnap
 
     async def _cameraStart(s, evt):
         media = js.Object.new()
@@ -390,6 +456,7 @@ class cameraWidget(UIElement):
         while s.camera.videoWidth == 0:
             await asyncio.sleep(0.1)
 
+        # set canvas resolution after video starts
         s.canvas.width = s.camera.videoWidth
         s.canvas.height = s.camera.videoHeight
 
@@ -414,11 +481,11 @@ class canvasWidget(UIElement):
     availableIndexes = []
     numWidgets = 0
 
-    def __init__(s, initX, initY):
+    def __init__(s, initX, initY, genFromClick=True, forcedIdx=None):
         s.index = None
         s.element = None
 
-        super().__init__(initX, initY)
+        super().__init__(initX, initY, genFromClick, forcedIdx)
 
         # make canvas
         s.canvas = js.document.createElement("canvas")
@@ -434,8 +501,39 @@ class canvasWidget(UIElement):
         idTag.innerText = f"Canvas {s.index}"
         s.element.appendChild(idTag)
 
-    def renderImage(s):
-        pass
+    def renderImage(s, rgba):
+        # TODO: force rgba to be numpy array with 3 dims and the 3rd being a size of 4
+
+        # convert passed numpy array into expected 1d format
+        dims = rgba.shape
+        height = dims[0]
+        width = dims[1]
+        channels = dims[2]
+
+        dataList = [0]*rgba.size
+        idx = 0
+        for i in range(height):
+            for j in range(width):
+                for k in range(channels):
+                    dataList[idx] = rgba[i][j][k]
+                    idx += 1
+
+        # resize canvas resolution
+        s.canvas.width = width
+        s.canvas.height = height
+
+        # change canvas aspect ratio
+        s.canvas.style.aspectRatio = f"{width}/{height}"
+        js.console.log(width)
+        js.console.log(height)
+        js.console.log(len(dataList))
+        imgData = s.ctx.createImageData(width, height)
+        for i in range(len(dataList)):
+            imgData.data[i] = dataList[i]
+        print("here")
+        s.ctx.putImageData(imgData, 0, 0)
+
+        # TODO: change stuff to data url stuff
 
     def _scaleContext(s):
         # needed if canvas is resized to make x and y axis equivalently scaled
@@ -449,6 +547,54 @@ class canvasWidget(UIElement):
 
         menuElem = js.document.createElement("div")
         menuElem.innerText = "Canvas"
+        menuElem.classList.add("widget-adder__menu__elem")
+        menuElem.addEventListener("mousedown", create_proxy(cls._genWidget))
+        return menuElem
+
+
+class imageFrameWidget(UIElement):
+    widgets = []
+    availableIndexes = []
+    numWidgets = 0
+
+    def __init__(s, initX, initY, genFromClick=True, forcedIdx=None):
+        s.index = None
+        s.element = None
+
+        super().__init__(initX, initY, genFromClick, forcedIdx)
+
+        # make canvas
+        s.img = js.document.createElement("img")
+        s.img.classList.add("UIimage")
+        s.element.appendChild(s.img)
+
+        # show widget number
+        idTag = js.document.createElement("div")
+        idTag.classList.add("UIElement__id")
+        idTag.innerText = f"Image {s.index}"
+        s.element.appendChild(idTag)
+
+    def displayPil(s, PILimage):
+        width, height = PILimage.size
+        imgByteArr = io.BytesIO()
+        PILimage.save(imgByteArr, format='png')
+        imgByteArr = imgByteArr.getvalue()
+        data = base64.b64encode(imgByteArr).decode('utf-8')
+        src = f"data:image/png;base64,{data}"
+        s.img.setAttribute("src", src)
+        s.img.style.width = f"{width/height*s.img.clientHeight}px"
+
+    def displayCv2(s, cv2Image):
+        PILimage = Image.fromarray(cv2.cvtColor(cv2Image, cv2.COLOR_BGRA2RGBA))
+        s.displayPil(PILimage)
+
+    @classmethod
+    def _genMenuElem(cls):
+        # generates DOM element that will create an instance of the class
+        # when clicked (for add widget menu)
+
+        menuElem = js.document.createElement("div")
+        menuElem.innerText = "Image Frame"
         menuElem.classList.add("widget-adder__menu__elem")
         menuElem.addEventListener("mousedown", create_proxy(cls._genWidget))
         return menuElem

@@ -48,25 +48,15 @@
     </div>
     <div id="pageContent">
       <div data-page="code-panel" class="pageContent__content">
-        <py-repl></py-repl>
+        <py-repl>
+          from uiInterface import getButton, getLed, getCanvas, getCamera, getImageFrame
+        </py-repl>
       </div>
       <div data-page="front-panel" class="pageContent__content shown">
         <div class="widget-adder">
           <div class="widget-adder__button">+ Add Widget</div>
           <div class="widget-adder__menu"></div>
         </div>
-        <!-- <div class="UIElement">
-          <i class="UIElement__caret"
-            ><div class="UIElement__menu">
-              <div class="UIElement__menu__elem" data-function="delete">
-                Delete Widget
-              </div>
-              <div class="UIElement__menu__elem">Properties</div>
-            </div></i
-          >
-          <div class="UIbutton"></div>
-          <div class="UIElement__id">Button 00</div>
-        </div> -->
         <div class="UIElement editable">
           <i class="UIElement__caret"
             ><div class="UIElement__menu">
@@ -76,33 +66,10 @@
               <div class="UIElement__menu__elem">Properties</div>
             </div></i
           >
-          <button class="UIcamera__startbutton" id="start-camera">
-            start camera
-          </button>
-          <button class="UIcamera__startbutton" id="stop-camera">
-            stop camera
-          </button>
-          <video class="UIcamera" autoplay></video>
-          <div class="UIElement__id">Camera</div>
+          
         </div>
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <button id="snap">snap</button>
-        <canvas class="UIcanvas" id="canvas"></canvas>
-      </div>
-      <div data-page="serial-panel" class="pageContent__content">
-        <py-repl>import serial</py-repl>
-      </div>
+        <button id="save"> save</button>
+        <button id="load"> load</button>
     </div>
   </body>
 </html>

@@ -25,3 +25,15 @@ class UITracker:
     def enableEditMode(s):
         for widgetClass in s.widgetList:
             widgetClass.enableEditMode()
+
+    def saveData(s):
+        data = {}
+        for widgetClass in s.widgetList:
+            data[widgetClass.__name__] = widgetClass.saveData()
+
+        print(data)
+        s.saveData = data
+
+    def loadData(s):
+        for widgetClass in s.widgetList:
+            widgetClass.loadData(s.savedData[widgetClass.__name__])
