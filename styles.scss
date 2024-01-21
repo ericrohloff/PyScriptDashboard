@@ -115,6 +115,7 @@ body {
         box-sizing: border-box;
         padding: 10px;
         width: 100%;
+        min-height: 80vh;
         display: none;
         &.shown {
             display: block;

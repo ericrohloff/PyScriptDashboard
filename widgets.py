@@ -9,11 +9,12 @@ import base64
 import numpy as np
 from PIL import Image
 import io
+import copy
 
 
 class UIElement(ABC):
     # These need to be overridden
-    widgets = []  # abstract
+    widgets = {}  # abstract
     availableIndexes = []  # abstract
     numWidgets = 0  # abstract
 
@@ -22,7 +23,7 @@ class UIElement(ABC):
     def __init__(s, initX, initY, genFromClick=True, forcedIdx=None):
         s.xPos = initX
         s.yPos = initY
-        s.index = forcedIdx
+        s.index = None
 
         s.element = js.document.createElement("div")
 
@@ -63,19 +64,18 @@ class UIElement(ABC):
     def _trackNewWidget(s, forcedIdx):
         # should be called after new widget is created in subclass to properly give
         # the element an ID.
-        if forcedIdx:  # TODO: fix forcedIdx stuff
+        if forcedIdx != None:
             s.index = forcedIdx
         elif not s.__class__.availableIndexes:
             s.index = s.__class__.numWidgets
         else:
             s.index = heapq.heappop(s.__class__.availableIndexes)
-
         s.__class__.numWidgets += 1
-        s.__class__.widgets.insert(s.index, s)
+        s.__class__.widgets[s.index] = s
 
     def _deleteWidget(s, evt=None, forced=False):
         # event listener for delete button in dropdown menu
-        if not js.window.confirm("Are you sure you want to remove the widget?") and not forced:
+        if not forced and not js.window.confirm("Are you sure you want to remove the widget?"):
             return
 
         # function class can override to add additional destructor steps if necessary
@@ -84,11 +84,11 @@ class UIElement(ABC):
         s.element.parentNode.removeChild(s.element)
         s.__class__.numWidgets -= 1
         heapq.heappush(s.__class__.availableIndexes, s.index)
-        s.__class__.widgets[s.index] = None
+        del s.__class__.widgets[s.index]
 
     def _dragElem(s, evt):
-        # TODO: rework so drag repositioning is based on mouse position instead of movementX/Y for clearner movement
-
+        # TODO: rework so drag repositioning is based on mouse position instead of movementX/Y for cleaner movement
+        evt.preventDefault()
         # event listener for mouse movement to move widget
 
         dx = evt.movementX
@@ -152,7 +152,7 @@ class UIElement(ABC):
 
     def _startDrag(s, evt=None):
         if s.__class__.editable:
-            evt.preventDefault()
+
             js.document.addEventListener("mousemove", s._dragElemProxy)
 
     def _stopDrag(s, evt):
@@ -193,58 +193,63 @@ class UIElement(ABC):
 
     @classmethod
     def enableRunMode(cls):
+        # TODO: make this more robust by adding a function for toggling editable instance
         cls.editable = False
-        for widget in cls.widgets:
-            if widget:
-                widget.element.classList.remove("editable")
+        for widget in cls.widgets.values():
+            widget.element.classList.remove("editable")
 
     @classmethod
     def enableEditMode(cls):
         cls.editable = True
-        for widget in cls.widgets:
-            if widget:
-                widget.element.classList.add("editable")
+        for widget in cls.widgets.values():
+            widget.element.classList.add("editable")
 
     @classmethod
     def saveData(cls):
         # serializes data for all widgets in class and returns dictionary
         data = {}
-        print(1)
-        for widget in cls.widgets:
-            if widget:
-                print(2)
-                data[f"{widget.index}"] = widget.getInstanceData()
-        return data
+        widgetData = {}
+        for idx, widget in cls.widgets.items():
+            widgetData[f"{widget.index}"] = widget.getInstanceData()
+        data["widgetData"] = widgetData
+        data["indexHeap"] = cls.availableIndexes
+        return copy.deepcopy(data)
 
     def getInstanceData(s):
         # serializes data for instance
-        print(3)
         return {
             "xPos": s.xPos,
-            "ypos": s.yPos,
+            "yPos": s.yPos,
         }
 
     @classmethod
     def loadData(cls, data):
-        for key, value in data:
+        print(f"loading {cls.__name__}")
+        # print(data["indexHeap"])
+        cls.clearClass()
+        # print(data["indexHeap"])
+        cls.availableIndexes = copy.deepcopy(data["indexHeap"])
+        # print(f"aidx:{cls.availableIndexes}")
+        # print("___")
+        for key, value in data["widgetData"].items():
             idx = int(key)
-            cls.widgets[idx] = cls.instantiateFromData(value, idx)
+            cls.instantiateFromData(value, idx)
 
     @classmethod
     def instantiateFromData(cls, data, idx):
-        initX = data["initX"]
-        initY = data["initY"]
+        initX = data["xPos"]
+        initY = data["yPos"]
         return cls(initX, initY, genFromClick=False, forcedIdx=idx)
 
     @classmethod
     def clearClass(cls):
-        for widget in cls.widgets:
-            widget._deleteWidget(forced=True)
+        for idx in list(cls.widgets.keys()).copy():
+            cls.widgets[idx]._deleteWidget(forced=True)
         cls.numWidgets = 0
         cls.availableIndexes = []
+        cls.widgets = {}
 
     @classmethod
-    @abstractmethod
     def _genMenuElem(cls):
         pass
 
@@ -254,7 +259,7 @@ class UIElement(ABC):
 
 
 class buttonWidget(UIElement):
-    widgets = []
+    widgets = {}
     availableIndexes = []
     numWidgets = 0
 
@@ -329,7 +334,7 @@ class buttonWidget(UIElement):
 
 
 class LEDWidget(UIElement):
-    widgets = []
+    widgets = {}
     availableIndexes = []
     numWidgets = 0
 
@@ -384,7 +389,7 @@ class LEDWidget(UIElement):
 
 
 class cameraWidget(UIElement):
-    widgets = []
+    widgets = {}
     availableIndexes = []
     numWidgets = 0
 
@@ -477,7 +482,7 @@ class cameraWidget(UIElement):
 
 
 class canvasWidget(UIElement):
-    widgets = []
+    widgets = {}
     availableIndexes = []
     numWidgets = 0
 
@@ -533,8 +538,6 @@ class canvasWidget(UIElement):
         print("here")
         s.ctx.putImageData(imgData, 0, 0)
 
-        # TODO: change stuff to data url stuff
-
     def _scaleContext(s):
         # needed if canvas is resized to make x and y axis equivalently scaled
         s.ctx.scale(s.canvas.width/s.canvas.offsetWidth,
@@ -553,7 +556,7 @@ class canvasWidget(UIElement):
 
 
 class imageFrameWidget(UIElement):
-    widgets = []
+    widgets = {}
     availableIndexes = []
     numWidgets = 0
 
@@ -601,4 +604,59 @@ class imageFrameWidget(UIElement):
 
 
 # TODO:
-# make text widget
+# make saving text widget work (doesnt save contents)
+# also issues editing text
+# make text widgets not generate in run mode
+
+class textWidget(UIElement):
+    widgets = {}
+    availableIndexes = []
+    numWidgets = 0
+
+    def __init__(s, initX, initY):
+        s.element = None
+
+        s.xPos = initX
+        s.yPos = initY
+        s.index = None
+
+        s.element = js.document.createElement("div")
+
+        s.frontPanel = js.document.querySelector("[data-page='front-panel']")
+        s.frontPanel.appendChild(s.element)
+        s.element.classList.add("UIElement")
+        s.element.classList.add("editable")
+
+        # position element under mouse
+        s.element.style.left = f"{initX}px"
+        s.element.style.top = f"{initY}px"
+        s.element.style.transform = "translate(-50%, -50%)"
+
+        # save drag callback proxies so they can be added and removed
+        s._dragElemProxy = create_proxy(s._dragElem)
+
+        # add drag event listeners
+        s.element.addEventListener("mousedown", create_proxy(s._startDrag))
+        js.document.addEventListener("mouseup", create_proxy(s._stopDrag))
+
+        # track widget in class attributes
+        s._trackNewWidget(None)
+
+        # make text box
+        s.textBox = js.document.createElement('input')
+        s.textBox.setAttribute('type', 'text')
+        s.element.appendChild(s.textBox)
+        s.textBox.focus()
+
+        s.textBox.addEventListener('blur', create_proxy(s._checkEmpty))
+
+    def _checkEmpty(s, evt):
+        if not s.textBox.value.strip():
+            s._deleteWidget(forced=True)
+
+    # needed to override this as this class doesn't have the genFromClick
+    @classmethod
+    def instantiateFromData(cls, data, idx):
+        initX = data["xPos"]
+        initY = data["yPos"]
+        return cls(initX, initY, forcedIdx=idx)
