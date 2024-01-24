@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 # PyScriptDashboard
-=======
-# FallCEEOProject-LV
 
-Project that aims to make a visual representation of a programmable dashboard that can have multiple tabs open at the same time to manipulate a physical device.
->>>>>>> Joseph
+How an integrated Python enviornment can be used to make a dashboard that
+promotes programming through communication of objects.

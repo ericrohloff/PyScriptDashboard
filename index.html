@@ -9,10 +9,8 @@
       href="https://pyscript.net/releases/2023.05.1/pyscript.css"
     />
     <link rel="stylesheet" href="./styles/styles.css" />
-    <script
-      defer
-      src="https://pyscript.net/releases/2023.05.1/pyscript.js"
-    ></script>
+    <script type="module" src="https://pyscript.net/releases/2023.12.1/core.js"></script>
+    <script src="mini-coi.js"></script>
   </head>
   <body>
     <py-config src="./pyscript.toml"></py-config>
@@ -48,9 +46,9 @@
     </div>
     <div id="pageContent">
       <div data-page="code-panel" class="pageContent__content">
-        <py-repl>
+        <script type ="py-editor" env="first">
           from uiInterface import getButton, getLed, getCanvas, getCamera, getImageFrame
-        </py-repl>
+        </script>
       </div>
       <div data-page="front-panel" class="pageContent__content shown">
         <div class="widget-adder">
