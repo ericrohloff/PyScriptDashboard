@@ -1,0 +1,5 @@
+terminal = true
+docked = true
+packages = [ "opencv-python", "numpy", "pillow", "matplotlib",]
+[[fetch]]
+files = ['widgets.py', 'UITracker.py',"./camera.py","uiInterface.py"]

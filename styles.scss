@@ -1,0 +1,327 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: rgb(170, 170, 170);
+}
+
+.headBar {
+    background-color: rgb(80, 80, 80);
+    width: 100%;
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+
+    &__tabs {
+        height: 100%;
+        width: 35%;
+        display: flex;
+        &__tab {
+            display: inline-flex;
+            padding: 4px 8px 4px 8px;
+            box-sizing: border-box;
+            flex:1;
+            align-items: center;
+            justify-content: center;
+    
+            &.frontPanel {
+                background-color: rgb(91, 191, 82);
+                    &:hover {
+                        background-color: rgb(63, 154, 55);
+                        cursor: pointer;
+                    }
+                    &:active {
+                        background-color: rgb(39, 121, 32);
+                    }
+            }
+        
+            &.codePanel {
+                background-color: rgb(191, 82, 82);
+                    &:hover {
+                        background-color: rgb(168, 58, 58);
+                        cursor: pointer;
+                    }
+                    &:active {
+                        background-color: rgb(119, 30, 30);
+                    }
+            }
+        
+            &.serialPanel {
+                background-color: rgb(82, 89, 191);
+                    &:hover {
+                        background-color: rgb(58, 72, 159);
+                        cursor: pointer;
+                    }
+                    &:active {
+                        background-color: rgb(49, 43, 136);
+                    }
+            }
+    
+            &.selected {
+                border: 1px solid black;
+            }
+        }
+    }
+
+    &__buttons {
+        display: flex;
+        height: 100%;
+        width: 20%;
+        &__button {
+            flex:1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            cursor: pointer;
+            &.run {
+                &.disabled {
+                    background-color: rgb(126, 126, 126);
+                    cursor:not-allowed;
+                    pointer-events: none;
+                }
+                background-color: rgb(57, 200, 50);
+                &:hover {
+                    background-color: rgb(55, 179, 48);
+                }
+                &:active {
+                    background-color: rgb(53, 145, 48);
+                }
+            }
+            &.stop {
+                &.disabled {
+                    background-color: rgb(126, 126, 126);
+                    cursor:not-allowed;
+                    pointer-events: none;
+                }
+                background-color: rgb(224, 67, 67);
+                &:hover {
+                    background-color: rgb(184, 58, 58);
+                }
+                &:active {
+                    background-color: rgb(144, 54, 54);
+                }
+            }
+        }
+    }
+}
+
+//this is the issue
+.pageContent {
+    position: relative;
+    width: 100%;
+
+    &__content {
+        position: relative;
+        box-sizing: border-box;
+        padding: 10px;
+        width: 100%;
+        min-height: 80vh;
+        display: none;
+        &.shown {
+            display: block;
+        }
+    }
+}
+
+
+.UIbutton {
+    background-color: rgb(168, 56, 56);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: solid 1px black;
+
+    margin: 5px 10px 0px 10px;
+
+    &:hover {
+        background-color: rgb(155, 52, 52);
+    }
+    &:active {
+        background-color: rgb(118, 31, 31);
+    }
+}
+
+.UIled {
+    background-color: rgba(255, 255, 255, 0);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: solid 1px black;
+
+    margin: 5px 10px 0px 10px;
+
+    &.on {
+        background-color: rgb(57, 215, 52)
+    }
+}
+
+.UIcamera {
+    background-color: rgb(0, 0, 0);
+    height: 200px;
+    aspect-ratio: 4/3;
+
+    &__startbutton {
+        border: 0;
+        background-color: rgb(158, 158, 158);
+        cursor: pointer;
+        &:active {
+            background-color: rgb(122, 122, 122);
+        }
+    }
+}
+
+.UIcanvas {
+    background-color: rgb(233, 233, 233);
+    height: 200px;
+    aspect-ratio: 4/3;
+}
+
+.UIimage {
+    height:200px;
+    width:200px;
+    background-color: black;
+}
+
+.UIElement {
+    position: absolute;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 40px;
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 10px;
+    outline: 0;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 5px;
+    &.editable{
+        &:hover {
+            outline: 1px solid rgba(0, 0, 0, 0.428);
+    
+            .UIElement__caret {
+                visibility: visible;
+                cursor: pointer;
+            }
+        }
+    }
+    
+
+    &__id {
+        font-size: 1em;
+        margin: 5px;
+        background-color: rgba(0, 0, 0, 0);
+        text-align: center;
+    }
+
+    &__caret {
+        position: absolute;
+        width: 0;
+        height: 0;
+        top: 6px;
+        right: 6px;
+        border-top: 4px solid;
+        border-right: 4px solid transparent;
+        border-left: 4px solid transparent;
+        visibility: hidden;
+        cursor: pointer;
+    }
+
+    &__menu {
+        background-color: rgba(255, 255, 255, 0.558);
+        position: absolute;
+        top: 5px;
+        min-height: 10px;
+        display: inline-flex;
+        flex-direction: column;
+        visibility: hidden;
+
+        &.shown {
+            visibility: visible;
+        }
+        
+
+        &__elem {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 0.5em;
+            background-color: rgba(255, 255, 255, 0.558);
+            padding: 5px;
+            display: inline-block;
+            white-space: nowrap;
+
+            &:hover {
+                background-color: rgb(208, 208, 208);
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+// temp
+.generator-button {
+    position:absolute;
+    padding:10px;
+    top:0;
+    right:0;
+    background-color: rgb(159, 159, 159);
+    cursor: pointer;
+    &:hover {
+        background-color: rgb(123, 123, 123);
+    }
+    &:active {
+        background-color: rgb(96, 96, 96);
+    }
+}
+
+.widget-adder {
+    position:absolute;
+    top:0;
+    right:0;
+    
+
+    &__button {
+        position:relative;
+        padding:10px;
+        display: inline-block;
+        top:0;
+        right: 0;
+        background-color: rgb(159, 159, 159);
+        cursor: pointer;
+        &:hover {
+            background-color: rgb(123, 123, 123);
+        }
+        &:active {
+            background-color: rgb(96, 96, 96);
+        }   
+    }
+
+    &__menu {
+        position: absolute;
+        display: none;
+        min-width: 200px;
+        min-height: 100px;
+        background-color: rgba(234, 234, 234, 0.668);
+        top:100%;
+        right:0;
+
+        &.shown {
+            display: flex;
+        }
+
+        &__elem {
+            padding: 5px;
+            margin: 3px;
+            background-color: rgba(182, 182, 182, 0.668);
+
+            &:hover {
+                background-color: rgba(137, 137, 137, 0.668);
+                cursor: pointer;
+            }
+            &:active {
+                background-color: rgb(100, 100, 100);
+            }
+        }
+
+        
+    }
+}

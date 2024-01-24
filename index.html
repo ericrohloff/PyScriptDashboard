@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Interface Creator</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://pyscript.net/releases/2023.05.1/pyscript.css"
+    />
+    <link rel="stylesheet" href="./styles/styles.css" />
+    <script
+      defer
+      src="https://pyscript.net/releases/2023.05.1/pyscript.js"
+    ></script>
+  </head>
+  <body>
+    <py-config src="./pyscript.toml"></py-config>
+    <py-script src="./main.py"></py-script>
+    <div class="headBar">
+      <div class="headBar__tabs">
+        <div
+          data-page-target="front-panel"
+          class="headBar__tabs__tab frontPanel selected"
+        >
+          Front Panel
+        </div>
+        <div data-page-target="code-panel" class="headBar__tabs__tab codePanel">
+          Code Panel
+        </div>
+        <div
+          data-page-target="serial-panel"
+          class="headBar__tabs__tab serialPanel"
+        >
+          Serial Panel
+        </div>
+      </div>
+      <div class="headBar__buttons">
+        <div class="headBar__buttons__button run" data-button="run">Run</div>
+        <div
+          class="headBar__buttons__button stop disabled"
+          data-button="stop"
+          disabled
+        >
+          Stop
+        </div>
+      </div>
+    </div>
+    <div id="pageContent">
+      <div data-page="code-panel" class="pageContent__content">
+        <py-repl>
+          from uiInterface import getButton, getLed, getCanvas, getCamera, getImageFrame
+        </py-repl>
+      </div>
+      <div data-page="front-panel" class="pageContent__content shown">
+        <div class="widget-adder">
+          <div class="widget-adder__button">+ Add Widget</div>
+          <div class="widget-adder__menu"></div>
+        </div>
+        <!-- <div class="UIElement editable">
+          <i class="UIElement__caret"
+            ><div class="UIElement__menu">
+              <div class="UIElement__menu__elem" data-function="delete">
+                Delete Widget
+              </div>
+              <div class="UIElement__menu__elem">Properties</div>
+            </div></i
+          >
+          
+        </div> -->
+        <!-- <div class="UIElement editable">
+          <input type="text">
+        </div> -->
+        <button id="save"> save</button>
+        <button id="load"> load</button>
+    </div>
+  </body>
+</html>

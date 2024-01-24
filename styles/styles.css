@@ -1,0 +1,293 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: rgb(170, 170, 170);
+}
+
+.headBar {
+  background-color: rgb(80, 80, 80);
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: space-between;
+}
+.headBar__tabs {
+  height: 100%;
+  width: 35%;
+  display: flex;
+}
+.headBar__tabs__tab {
+  display: inline-flex;
+  padding: 4px 8px 4px 8px;
+  box-sizing: border-box;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+.headBar__tabs__tab.frontPanel {
+  background-color: rgb(91, 191, 82);
+}
+.headBar__tabs__tab.frontPanel:hover {
+  background-color: rgb(63, 154, 55);
+  cursor: pointer;
+}
+.headBar__tabs__tab.frontPanel:active {
+  background-color: rgb(39, 121, 32);
+}
+.headBar__tabs__tab.codePanel {
+  background-color: rgb(191, 82, 82);
+}
+.headBar__tabs__tab.codePanel:hover {
+  background-color: rgb(168, 58, 58);
+  cursor: pointer;
+}
+.headBar__tabs__tab.codePanel:active {
+  background-color: rgb(119, 30, 30);
+}
+.headBar__tabs__tab.serialPanel {
+  background-color: rgb(82, 89, 191);
+}
+.headBar__tabs__tab.serialPanel:hover {
+  background-color: rgb(58, 72, 159);
+  cursor: pointer;
+}
+.headBar__tabs__tab.serialPanel:active {
+  background-color: rgb(49, 43, 136);
+}
+.headBar__tabs__tab.selected {
+  border: 1px solid black;
+}
+.headBar__buttons {
+  display: flex;
+  height: 100%;
+  width: 20%;
+}
+.headBar__buttons__button {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  cursor: pointer;
+}
+.headBar__buttons__button.run {
+  background-color: rgb(57, 200, 50);
+}
+.headBar__buttons__button.run.disabled {
+  background-color: rgb(126, 126, 126);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.headBar__buttons__button.run:hover {
+  background-color: rgb(55, 179, 48);
+}
+.headBar__buttons__button.run:active {
+  background-color: rgb(53, 145, 48);
+}
+.headBar__buttons__button.stop {
+  background-color: rgb(224, 67, 67);
+}
+.headBar__buttons__button.stop.disabled {
+  background-color: rgb(126, 126, 126);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.headBar__buttons__button.stop:hover {
+  background-color: rgb(184, 58, 58);
+}
+.headBar__buttons__button.stop:active {
+  background-color: rgb(144, 54, 54);
+}
+
+.pageContent {
+  position: relative;
+  width: 100%;
+}
+.pageContent__content {
+  position: relative;
+  box-sizing: border-box;
+  padding: 10px;
+  width: 100%;
+  min-height: 80vh;
+  display: none;
+}
+.pageContent__content.shown {
+  display: block;
+}
+
+.UIbutton {
+  background-color: rgb(168, 56, 56);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: solid 1px black;
+  margin: 5px 10px 0px 10px;
+}
+.UIbutton:hover {
+  background-color: rgb(155, 52, 52);
+}
+.UIbutton:active {
+  background-color: rgb(118, 31, 31);
+}
+
+.UIled {
+  background-color: rgba(255, 255, 255, 0);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: solid 1px black;
+  margin: 5px 10px 0px 10px;
+}
+.UIled.on {
+  background-color: rgb(57, 215, 52);
+}
+
+.UIcamera {
+  background-color: rgb(0, 0, 0);
+  height: 200px;
+  aspect-ratio: 4/3;
+}
+.UIcamera__startbutton {
+  border: 0;
+  background-color: rgb(158, 158, 158);
+  cursor: pointer;
+}
+.UIcamera__startbutton:active {
+  background-color: rgb(122, 122, 122);
+}
+
+.UIcanvas {
+  background-color: rgb(233, 233, 233);
+  height: 200px;
+  aspect-ratio: 4/3;
+}
+
+.UIimage {
+  height: 200px;
+  width: 200px;
+  background-color: black;
+}
+
+.UIElement {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 40px;
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 10px;
+  outline: 0;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 5px;
+}
+.UIElement.editable:hover {
+  outline: 1px solid rgba(0, 0, 0, 0.428);
+}
+.UIElement.editable:hover .UIElement__caret {
+  visibility: visible;
+  cursor: pointer;
+}
+.UIElement__id {
+  font-size: 1em;
+  margin: 5px;
+  background-color: rgba(0, 0, 0, 0);
+  text-align: center;
+}
+.UIElement__caret {
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: 6px;
+  right: 6px;
+  border-top: 4px solid;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+  visibility: hidden;
+  cursor: pointer;
+}
+.UIElement__menu {
+  background-color: rgba(255, 255, 255, 0.558);
+  position: absolute;
+  top: 5px;
+  min-height: 10px;
+  display: inline-flex;
+  flex-direction: column;
+  visibility: hidden;
+}
+.UIElement__menu.shown {
+  visibility: visible;
+}
+.UIElement__menu__elem {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.5em;
+  background-color: rgba(255, 255, 255, 0.558);
+  padding: 5px;
+  display: inline-block;
+  white-space: nowrap;
+}
+.UIElement__menu__elem:hover {
+  background-color: rgb(208, 208, 208);
+  cursor: pointer;
+}
+
+.generator-button {
+  position: absolute;
+  padding: 10px;
+  top: 0;
+  right: 0;
+  background-color: rgb(159, 159, 159);
+  cursor: pointer;
+}
+.generator-button:hover {
+  background-color: rgb(123, 123, 123);
+}
+.generator-button:active {
+  background-color: rgb(96, 96, 96);
+}
+
+.widget-adder {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.widget-adder__button {
+  position: relative;
+  padding: 10px;
+  display: inline-block;
+  top: 0;
+  right: 0;
+  background-color: rgb(159, 159, 159);
+  cursor: pointer;
+}
+.widget-adder__button:hover {
+  background-color: rgb(123, 123, 123);
+}
+.widget-adder__button:active {
+  background-color: rgb(96, 96, 96);
+}
+.widget-adder__menu {
+  position: absolute;
+  display: none;
+  min-width: 200px;
+  min-height: 100px;
+  background-color: rgba(234, 234, 234, 0.668);
+  top: 100%;
+  right: 0;
+}
+.widget-adder__menu.shown {
+  display: flex;
+}
+.widget-adder__menu__elem {
+  padding: 5px;
+  margin: 3px;
+  background-color: rgba(182, 182, 182, 0.668);
+}
+.widget-adder__menu__elem:hover {
+  background-color: rgba(137, 137, 137, 0.668);
+  cursor: pointer;
+}
+.widget-adder__menu__elem:active {
+  background-color: rgb(100, 100, 100);
+}/*# sourceMappingURL=styles.css.map */
